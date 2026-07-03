@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clan Buddies SACCO</title>
+    <!-- STABLE TAILWIND PLAY CDN ENGINE -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FALLBACK TAILWIND V3 (Just in case v4 browser sandbox blocks it on GitHub domains) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-50 font-sans text-gray-900">
+<body class="bg-gray-50 text-gray-900" style="font-family: sans-serif;">
 
+    <!-- HEADER -->
     <header class="bg-emerald-800 text-white py-6 shadow-md text-center">
         <div class="container mx-auto px-4">
             <div class="flex justify-center items-center gap-3 mb-2">
@@ -22,6 +27,7 @@
     </header>
 
     <main class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- STATS BAR -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
                 <div class="p-3 bg-emerald-100 text-emerald-700 rounded-xl"><i class="fa-solid fa-money-bill-wave text-xl"></i></div>
@@ -54,6 +60,7 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- ROSTER PANEL -->
             <div class="lg:col-span-2 space-y-6">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div class="flex justify-between items-center mb-6">
@@ -77,6 +84,7 @@
                     </div>
                 </div>
 
+                <!-- HISTORICAL ARCHIVE VIEW -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Cycle History Vault
@@ -87,6 +95,7 @@
                 </div>
             </div>
 
+            <!-- ADMIN COMMAND CONSOLE -->
             <div class="bg-gray-900 text-gray-100 p-6 rounded-2xl shadow-lg border border-gray-800 h-fit space-y-6">
                 <div>
                     <h2 class="text-lg font-bold text-amber-400 flex items-center gap-2 mb-1">
@@ -116,7 +125,7 @@
     </main>
 
     <script>
-        // Data Structure loaded from localStorage or using base templates
+        // Self-initializing system architecture
         let systemData = JSON.parse(localStorage.getItem('clanBuddiesData')) || {
             currentCycle: 1,
             history: [],
@@ -138,6 +147,10 @@
 
         function saveData() {
             localStorage.setItem('clanBuddiesData', JSON.stringify(systemData));
+            renderAll();
+        }
+
+        function renderAll() {
             renderTable();
             renderAdminChecklist();
             renderHistory();
@@ -146,16 +159,16 @@
 
         function renderTable() {
             const tbody = document.getElementById('memberTableBody');
+            if(!tbody) return;
             tbody.innerHTML = '';
             const sorted = [...systemData.members].sort((a,b) => a.order - b.order);
 
             sorted.forEach(m => {
-                // Option 4: Direct WhatsApp string builder
                 const message = encodeURIComponent(`Hello ${m.name}! 🪙 Quick update from Clan Buddies. Your weekly cash round contribution of 250,000 UGX is currently pending. Let's keep lifting each other! 🚀`);
                 const whatsappUrl = `https://wa.me/${m.phone}?text=${message}`;
 
                 tbody.innerHTML += `
-                    <tr class="hover:bg-gray-50/50">
+                    <tr class="border-b border-gray-100">
                         <td class="py-3.5 font-semibold text-gray-700 flex items-center gap-2">
                             <span class="inline-flex items-center justify-center bg-gray-100 text-gray-500 font-bold rounded-full w-5 h-5 text-[10px]">${m.order}</span>
                             ${m.name}
@@ -166,7 +179,7 @@
                             </span>
                         </td>
                         <td class="py-3.5">
-                            <button onclick="toggleReceipt(${m.id})" class="text-xs text-left font-medium focus:outline-none ${m.received ? 'text-amber-600 font-bold' : 'text-gray-300 hover:text-gray-500'}">
+                            <button onclick="toggleReceipt(${m.id})" class="text-xs text-left font-medium focus:outline-none ${m.received ? 'text-amber-600 font-bold' : 'text-gray-400 hover:text-gray-500'}">
                                 ${m.received ? '💰 Collection Clear' : '⏳ Tap to Handover'}
                             </button>
                         </td>
@@ -184,6 +197,7 @@
 
         function renderAdminChecklist() {
             const container = document.getElementById('adminChecklist');
+            if(!container) return;
             container.innerHTML = '';
             systemData.members.forEach(m => {
                 container.innerHTML += `
@@ -215,7 +229,6 @@
             saveData();
         }
 
-        // Option 3: Logic to snapshot history safely
         function archiveCurrentCycle() {
             if(!confirm("Are you sure you want to lock this cycle? This will clear current collection statuses for the next pool.")) return;
             
@@ -228,19 +241,19 @@
             systemData.history.push(snapshot);
             systemData.currentCycle += 1;
             
-            // Reset for next round
             systemData.members.forEach(m => { m.paid = false; m.received = false; });
             saveData();
         }
 
         function renderHistory() {
             const container = document.getElementById('historyContainer');
+            if(!container) return;
             if(systemData.history.length === 0) return;
             
             container.innerHTML = '<div class="space-y-3">';
             systemData.history.forEach(h => {
                 container.innerHTML += `
-                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 flex justify-between items-center text-gray-700 italic font-normal">
+                    <div class="bg-gray-100 border border-gray-200 rounded-xl p-3 flex justify-between items-center text-gray-700 italic font-normal">
                         <div>
                             <span class="font-bold text-emerald-800 not-italic">Cycle ${h.cycle} Archive</span> 
                             <p class="text-xs text-gray-400 mt-0.5">Completed on ${h.date}</p>
@@ -259,7 +272,10 @@
             document.getElementById('archiveCount').innerText = `${systemData.history.length} Saved`;
         }
 
-        window.onload = () => { saveData(); };
+        // Run rendering immediately upon DOM parse loading
+        window.addEventListener('DOMContentLoaded', () => {
+            renderAll();
+        });
     </script>
 </body>
 </html>
