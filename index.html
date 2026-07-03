@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clan Buddies SACCO</title>
+    <!-- STRICTLY TAILWIND V3 -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-50 text-gray-900" style="font-family: sans-serif;">
 
+    <!-- HEADER -->
     <header class="bg-emerald-800 text-white py-6 shadow-md text-center">
         <div class="container mx-auto px-4">
             <div class="flex justify-center items-center gap-3 mb-2">
@@ -22,6 +25,7 @@
     </header>
 
     <main class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- STATS BAR -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
                 <div class="p-3 bg-emerald-100 text-emerald-700 rounded-xl"><i class="fa-solid fa-money-bill-wave text-xl"></i></div>
@@ -45,20 +49,22 @@
                 </div>
             </div>
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
-                <div class="p-3 bg-purple-100 text-purple-700 rounded-xl"><i class="fa-solid fa-box-archive text-xl"></i></div>
+                <div class="p-3 bg-purple-100 text-purple-700 rounded-xl"><i class="fa-solid fa-users text-xl"></i></div>
                 <div>
-                    <p class="text-xs text-gray-400 font-medium">Archived Rounds</p>
-                    <p id="archiveCount" class="text-lg font-bold text-gray-800">0 Saved</p>
+                    <p class="text-xs text-gray-400 font-medium">Total Members</p>
+                    <p id="memberCount" class="text-lg font-bold text-gray-800">0</p>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- ROSTER PANEL -->
             <div class="lg:col-span-2 space-y-6">
+                <!-- MAIN TABLE -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                            <i class="fa-solid fa-users text-emerald-600"></i> Current Round Overview
+                            <i class="fa-solid fa-list-check text-emerald-600"></i> Current Round Overview
                         </h2>
                     </div>
                     
@@ -77,17 +83,33 @@
                     </div>
                 </div>
 
+                <!-- FINANCIAL LEDGER -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <i class="fa-solid fa-book-journal-whills text-blue-500"></i> Active Financial Ledger
+                        </h2>
+                    </div>
+                    <div class="overflow-y-auto max-h-64 pr-2">
+                        <ul id="ledgerList" class="space-y-3">
+                            <!-- Transactions will inject here -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- HISTORICAL ARCHIVE VIEW -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Cycle History Vault
                     </h2>
                     <div id="historyContainer" class="text-sm text-gray-400 italic py-2">
-                        No previous cycles archived yet. Close out your first complete round to save history!
+                        No previous cycles archived yet.
                     </div>
                 </div>
             </div>
 
-            <div class="bg-gray-900 text-gray-100 p-6 rounded-2xl shadow-lg border border-gray-800 h-fit space-y-6">
+            <!-- ADMIN COMMAND CONSOLE -->
+            <div class="bg-gray-900 text-gray-100 p-6 rounded-2xl shadow-lg border border-gray-800 h-fit space-y-6 sticky top-6">
                 <div>
                     <h2 class="text-lg font-bold text-amber-400 flex items-center gap-2 mb-1">
                         <i class="fa-solid fa-sliders"></i> Admin Control Room
@@ -96,6 +118,10 @@
                 </div>
                 
                 <div class="space-y-3">
+                    <button onclick="openMemberModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-4 rounded-xl transition text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-user-plus"></i> Add / Edit Members
+                    </button>
+
                     <button onclick="generateRandomOrder()" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 px-4 rounded-xl transition text-xs flex items-center justify-center gap-2">
                         <i class="fa-solid fa-shuffle"></i> Shuffle Payout Order
                     </button>
@@ -109,31 +135,69 @@
                 
                 <div>
                     <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Mark Contribution Receipt</h3>
-                    <div id="adminChecklist" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+                    <div id="adminChecklist" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- MEMBER MANAGEMENT MODAL -->
+    <div id="memberModal" class="fixed inset-0 bg-gray-900/80 hidden items-center justify-center z-50 px-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="bg-emerald-800 p-4 text-white flex justify-between items-center">
+                <h3 class="font-bold text-lg" id="modalTitle">Register Member</h3>
+                <button onclick="closeMemberModal()" class="text-emerald-200 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <input type="hidden" id="editMemberId">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Full Name</label>
+                    <input type="text" id="editMemberName" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. John Doe">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">WhatsApp Phone Number</label>
+                    <input type="text" id="editMemberPhone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. 256700000000">
+                    <p class="text-[10px] text-gray-400 mt-1">Include country code without '+' (e.g., 256 for Uganda)</p>
+                </div>
+                <div class="pt-4 flex gap-3">
+                    <button onclick="saveMember()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl transition">Save Details</button>
+                    <button onclick="closeMemberModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 rounded-xl transition">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        let systemData = JSON.parse(localStorage.getItem('clanBuddiesData')) || {
-            currentCycle: 1,
-            history: [],
-            members: [
-                { id: 1, name: "Okullu David Laurance", phone: "256700000000", paid: false, received: false, order: 1 },
-                { id: 2, name: "Apule Gerald", phone: "256700000001", paid: false, received: false, order: 2 },
-                { id: 3, name: "Chris Mukasa", phone: "256700000002", paid: false, received: false, order: 3 },
-                { id: 4, name: "Brian Okello", phone: "256700000003", paid: false, received: false, order: 4 },
-                { id: 5, name: "Sarah K.", phone: "256700000004", paid: false, received: false, order: 5 },
-                { id: 6, name: "Derrick J.", phone: "256700000005", paid: false, received: false, order: 6 },
-                { id: 7, name: "Grace A.", phone: "256700000006", paid: false, received: false, order: 7 },
-                { id: 8, name: "Ivan T.", phone: "256700000007", paid: false, received: false, order: 8 },
-                { id: 9, name: "Emmanuel O.", phone: "256700000008", paid: false, received: false, order: 9 },
-                { id: 10, name: "Fiona N.", phone: "256700000009", paid: false, received: false, order: 10 },
-                { id: 11, name: "Alex B.", phone: "256700000010", paid: false, received: false, order: 11 },
-                { id: 12, name: "Joan M.", phone: "256700000011", paid: false, received: false, order: 12 }
-            ]
-        };
+        // System Initialization & Schema Upgrade
+        let rawData = localStorage.getItem('clanBuddiesData');
+        let systemData = rawData ? JSON.parse(rawData) : null;
+
+        // Initialize default or upgrade legacy data
+        if (!systemData || !systemData.transactions) {
+            systemData = {
+                currentCycle: systemData?.currentCycle || 1,
+                history: systemData?.history || [],
+                transactions: [], // New ledger tracking
+                members: systemData?.members || [
+                    { id: 1, name: "Okullu David Laurance", phone: "256700000000", paid: false, received: false, order: 1 },
+                    { id: 2, name: "Apule Gerald", phone: "256700000001", paid: false, received: false, order: 2 },
+                    { id: 3, name: "Chris Mukasa", phone: "256700000002", paid: false, received: false, order: 3 },
+                    { id: 4, name: "Brian Okello", phone: "256700000003", paid: false, received: false, order: 4 },
+                    { id: 5, name: "Sarah K.", phone: "256700000004", paid: false, received: false, order: 5 },
+                    { id: 6, name: "Derrick J.", phone: "256700000005", paid: false, received: false, order: 6 },
+                    { id: 7, name: "Grace A.", phone: "256700000006", paid: false, received: false, order: 7 },
+                    { id: 8, name: "Ivan T.", phone: "256700000007", paid: false, received: false, order: 8 },
+                    { id: 9, name: "Emmanuel O.", phone: "256700000008", paid: false, received: false, order: 9 },
+                    { id: 10, name: "Fiona N.", phone: "256700000009", paid: false, received: false, order: 10 },
+                    { id: 11, name: "Alex B.", phone: "256700000010", paid: false, received: false, order: 11 },
+                    { id: 12, name: "Joan M.", phone: "256700000011", paid: false, received: false, order: 12 }
+                ]
+            };
+            saveData();
+        }
+
+        const CONTRIBUTION_AMOUNT = 250000;
+        const REMITTANCE_AMOUNT = 3000000;
 
         function saveData() {
             localStorage.setItem('clanBuddiesData', JSON.stringify(systemData));
@@ -143,9 +207,12 @@
         function renderAll() {
             renderTable();
             renderAdminChecklist();
+            renderLedger();
             renderHistory();
             updateGlobalStats();
         }
+
+        // ---------- UI RENDERING ----------
 
         function renderTable() {
             const tbody = document.getElementById('memberTableBody');
@@ -154,14 +221,17 @@
             const sorted = [...systemData.members].sort((a,b) => a.order - b.order);
 
             sorted.forEach(m => {
-                const message = encodeURIComponent(`Hello ${m.name}! 🪙 Quick update from Clan Buddies. Your weekly cash round contribution of 250,000 UGX is currently pending. Let's keep lifting each other! 🚀`);
+                const message = encodeURIComponent(`Hello ${m.name}! 🪙 Quick update from Clan Buddies. Your weekly cash round contribution of ${CONTRIBUTION_AMOUNT.toLocaleString()} UGX is currently pending. Let's keep lifting each other! 🚀`);
                 const whatsappUrl = `https://wa.me/${m.phone}?text=${message}`;
 
                 tbody.innerHTML += `
-                    <tr class="border-b border-gray-100">
-                        <td class="py-3.5 font-semibold text-gray-700 flex items-center gap-2">
-                            <span class="inline-flex items-center justify-center bg-gray-100 text-gray-500 font-bold rounded-full w-5 h-5 text-[10px]">${m.order}</span>
-                            ${m.name}
+                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <td class="py-3.5 font-semibold text-gray-700 flex items-center gap-2 cursor-pointer" onclick="openMemberModal(${m.id})">
+                            <span class="inline-flex items-center justify-center bg-gray-200 text-gray-600 font-bold rounded-full w-5 h-5 text-[10px]">${m.order}</span>
+                            <div>
+                                <span class="block">${m.name}</span>
+                                <span class="block text-[10px] text-gray-400 font-normal"><i class="fa-solid fa-phone"></i> ${m.phone}</span>
+                            </div>
                         </td>
                         <td class="py-3.5">
                             <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${m.paid ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
@@ -170,12 +240,12 @@
                         </td>
                         <td class="py-3.5">
                             <button onclick="toggleReceipt(${m.id})" class="text-xs text-left font-medium focus:outline-none ${m.received ? 'text-amber-600 font-bold' : 'text-gray-400 hover:text-gray-500'}">
-                                ${m.received ? '💰 Collection Clear' : '⏳ Tap to Handover'}
+                                ${m.received ? '💰 Remitted' : '⏳ Tap to Handover'}
                             </button>
                         </td>
                         <td class="py-3.5 text-right">
                             ${!m.paid ? `
-                                <a href="${whatsappUrl}" target="_blank" class="inline-flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white text-xs px-2.5 py-1 rounded-lg font-medium transition shadow-sm">
+                                <a href="${whatsappUrl}" target="_blank" class="inline-flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white text-xs px-2.5 py-1.5 rounded-lg font-medium transition shadow-sm">
                                     <i class="fa-brands fa-whatsapp"></i> Nudge
                                 </a>
                             ` : `<span class="text-emerald-500 text-xs font-semibold"><i class="fa-solid fa-circle-check"></i> Cleared</span>`}
@@ -189,28 +259,182 @@
             const container = document.getElementById('adminChecklist');
             if(!container) return;
             container.innerHTML = '';
-            systemData.members.forEach(m => {
+            
+            const sorted = [...systemData.members].sort((a,b) => a.order - b.order);
+            sorted.forEach(m => {
                 container.innerHTML += `
-                    <div class="flex items-center justify-between bg-gray-800 p-2 rounded-lg border border-gray-700/40">
-                        <span class="text-xs font-medium text-gray-300">${m.name}</span>
-                        <input type="checkbox" ${m.paid ? 'checked' : ''} onchange="togglePayment(${m.id})" class="accent-emerald-500 h-3.5 w-3.5 rounded">
+                    <div class="flex items-center justify-between bg-gray-800 p-2.5 rounded-lg border border-gray-700/40 hover:bg-gray-700 transition">
+                        <span class="text-xs font-medium text-gray-300">${m.order}. ${m.name}</span>
+                        <input type="checkbox" ${m.paid ? 'checked' : ''} onchange="togglePayment(${m.id})" class="accent-emerald-500 h-4 w-4 rounded cursor-pointer">
                     </div>
                 `;
             });
         }
 
+        function renderLedger() {
+            const container = document.getElementById('ledgerList');
+            if(!container) return;
+            container.innerHTML = '';
+
+            if (systemData.transactions.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-400 italic">No transactions recorded for this cycle yet.</p>';
+                return;
+            }
+
+            // Show newest transactions first
+            const sortedTransactions = [...systemData.transactions].sort((a, b) => b.timestamp - a.timestamp);
+
+            sortedTransactions.forEach(t => {
+                const isRemit = t.type === 'remittance';
+                container.innerHTML += `
+                    <li class="flex items-start gap-3 p-3 rounded-xl border ${isRemit ? 'bg-amber-50 border-amber-100' : 'bg-emerald-50 border-emerald-100'}">
+                        <div class="${isRemit ? 'bg-amber-200 text-amber-800' : 'bg-emerald-200 text-emerald-800'} p-2 rounded-lg mt-0.5">
+                            <i class="fa-solid ${isRemit ? 'fa-hand-holding-dollar' : 'fa-arrow-right-to-bracket'}"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center">
+                                <p class="text-sm font-bold text-gray-800">${t.memberName}</p>
+                                <p class="text-sm font-bold ${isRemit ? 'text-amber-600' : 'text-emerald-600'}">
+                                    ${isRemit ? '-' : '+'}${t.amount.toLocaleString()} UGX
+                                </p>
+                            </div>
+                            <div class="flex justify-between items-center mt-1">
+                                <p class="text-xs font-medium text-gray-500 uppercase">${isRemit ? 'Total Remittance' : 'Weekly Contribution'}</p>
+                                <p class="text-[10px] text-gray-400"><i class="fa-regular fa-clock"></i> ${t.dateFormatted}</p>
+                            </div>
+                        </div>
+                    </li>
+                `;
+            });
+        }
+
+        // ---------- BUSINESS LOGIC ----------
+
         function togglePayment(id) {
             const m = systemData.members.find(x => x.id === id);
-            if(m) { m.paid = !m.paid; saveData(); }
+            if(m) { 
+                m.paid = !m.paid; 
+                
+                if (m.paid) {
+                    // Record payment in ledger
+                    systemData.transactions.push({
+                        id: Date.now(),
+                        timestamp: Date.now(),
+                        dateFormatted: new Date().toLocaleString(),
+                        type: 'contribution',
+                        memberId: m.id,
+                        memberName: m.name,
+                        amount: CONTRIBUTION_AMOUNT
+                    });
+                } else {
+                    // Remove payment from ledger if unchecked (undo)
+                    systemData.transactions = systemData.transactions.filter(t => !(t.memberId === m.id && t.type === 'contribution'));
+                }
+                
+                saveData(); 
+            }
         }
 
         function toggleReceipt(id) {
             const m = systemData.members.find(x => x.id === id);
-            if(m) { m.received = !m.received; saveData(); }
+            if(m) { 
+                m.received = !m.received; 
+                
+                if (m.received) {
+                    // Make sure no one else is currently marked as received (only 1 recipient per cycle usually)
+                    systemData.members.forEach(other => {
+                        if (other.id !== id && other.received) {
+                            other.received = false;
+                            // Remove their remittance record
+                            systemData.transactions = systemData.transactions.filter(t => !(t.memberId === other.id && t.type === 'remittance'));
+                        }
+                    });
+
+                    // Log Remittance
+                    systemData.transactions.push({
+                        id: Date.now(),
+                        timestamp: Date.now(),
+                        dateFormatted: new Date().toLocaleString(),
+                        type: 'remittance',
+                        memberId: m.id,
+                        memberName: m.name,
+                        amount: REMITTANCE_AMOUNT
+                    });
+                } else {
+                    // Remove Remittance
+                    systemData.transactions = systemData.transactions.filter(t => !(t.memberId === m.id && t.type === 'remittance'));
+                }
+
+                saveData(); 
+            }
         }
 
+        // ---------- MEMBER MANAGEMENT (MODAL) ----------
+
+        function openMemberModal(id = null) {
+            const modal = document.getElementById('memberModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            if (id) {
+                document.getElementById('modalTitle').innerText = "Edit Member Details";
+                const m = systemData.members.find(x => x.id === id);
+                document.getElementById('editMemberId').value = m.id;
+                document.getElementById('editMemberName').value = m.name;
+                document.getElementById('editMemberPhone').value = m.phone;
+            } else {
+                document.getElementById('modalTitle').innerText = "Register New Member";
+                document.getElementById('editMemberId').value = "";
+                document.getElementById('editMemberName').value = "";
+                document.getElementById('editMemberPhone').value = "";
+            }
+        }
+
+        function closeMemberModal() {
+            const modal = document.getElementById('memberModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function saveMember() {
+            const id = document.getElementById('editMemberId').value;
+            const name = document.getElementById('editMemberName').value.trim();
+            const phone = document.getElementById('editMemberPhone').value.trim();
+
+            if (!name || !phone) {
+                alert("Please provide both name and phone number.");
+                return;
+            }
+
+            if (id) {
+                // Edit existing
+                const m = systemData.members.find(x => x.id == id);
+                if(m) {
+                    m.name = name;
+                    m.phone = phone;
+                }
+            } else {
+                // Add new
+                const nextId = systemData.members.length > 0 ? Math.max(...systemData.members.map(m => m.id)) + 1 : 1;
+                const nextOrder = systemData.members.length > 0 ? Math.max(...systemData.members.map(m => m.order)) + 1 : 1;
+                systemData.members.push({
+                    id: nextId,
+                    name: name,
+                    phone: phone,
+                    paid: false,
+                    received: false,
+                    order: nextOrder
+                });
+            }
+
+            closeMemberModal();
+            saveData();
+        }
+
+        // ---------- CYCLE MANAGEMENT ----------
+
         function generateRandomOrder() {
-            let orders = Array.from({length: 12}, (_, i) => i + 1);
+            let orders = Array.from({length: systemData.members.length}, (_, i) => i + 1);
             for (let i = orders.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [orders[i], orders[j]] = [orders[j], orders[i]];
@@ -220,18 +444,21 @@
         }
 
         function archiveCurrentCycle() {
-            if(!confirm("Are you sure you want to lock this cycle? This will clear current collection statuses for the next pool.")) return;
+            if(!confirm("Are you sure you want to lock this cycle? This will save the ledger and reset statuses for the next pool.")) return;
             
             const snapshot = {
                 cycle: systemData.currentCycle,
                 date: new Date().toLocaleDateString(),
-                records: systemData.members.map(m => ({name: m.name, order: m.order, paid: m.paid}))
+                records: systemData.members.map(m => ({name: m.name, order: m.order, paid: m.paid, received: m.received})),
+                ledgerSnapshot: [...systemData.transactions]
             };
             
             systemData.history.push(snapshot);
             systemData.currentCycle += 1;
             
+            // Reset for new cycle
             systemData.members.forEach(m => { m.paid = false; m.received = false; });
+            systemData.transactions = []; // Clear ledger for new cycle
             saveData();
         }
 
@@ -242,13 +469,22 @@
             
             container.innerHTML = '<div class="space-y-3">';
             systemData.history.forEach(h => {
+                const totalCollected = h.records.filter(r => r.paid).length;
+                const recipient = h.records.find(r => r.received)?.name || 'Unassigned';
+
                 container.innerHTML += `
-                    <div class="bg-gray-100 border border-gray-200 rounded-xl p-3 flex justify-between items-center text-gray-700 italic font-normal">
-                        <div>
-                            <span class="font-bold text-emerald-800 not-italic">Cycle ${h.cycle} Archive</span> 
-                            <p class="text-xs text-gray-400 mt-0.5">Completed on ${h.date}</p>
+                    <div class="bg-gray-100 border border-gray-200 rounded-xl p-4 text-gray-700">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <span class="font-bold text-emerald-800">Cycle ${h.cycle} Archive</span> 
+                                <p class="text-xs text-gray-400 mt-0.5"><i class="fa-regular fa-calendar"></i> Closed on ${h.date}</p>
+                            </div>
+                            <span class="text-xs bg-gray-200 text-gray-600 px-2.5 py-1 rounded-md font-bold">${totalCollected}/${h.records.length} Paid</span>
                         </div>
-                        <span class="text-xs bg-gray-200 text-gray-600 px-2.5 py-0.5 rounded-full not-italic font-semibold">12/12 Logged</span>
+                        <div class="mt-2 text-sm border-t border-gray-200 pt-2 flex justify-between">
+                            <span class="text-gray-500">Recipient:</span>
+                            <span class="font-bold text-amber-600">${recipient}</span>
+                        </div>
                     </div>
                 `;
             });
@@ -259,9 +495,10 @@
             const currentRec = systemData.members.find(m => m.received === true);
             document.getElementById('currentRecipient').innerText = currentRec ? currentRec.name : "None assigned";
             document.getElementById('cycleDisplay').innerText = `Cycle ${systemData.currentCycle}`;
-            document.getElementById('archiveCount').innerText = `${systemData.history.length} Saved`;
+            document.getElementById('memberCount').innerText = systemData.members.length;
         }
 
+        // Run rendering immediately upon DOM parse loading
         window.addEventListener('DOMContentLoaded', () => {
             renderAll();
         });
