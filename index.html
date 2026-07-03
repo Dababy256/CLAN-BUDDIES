@@ -1,1 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clan Buddies SACCO</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans text-gray-900">
 
+    <header class="bg-emerald-800 text-white py-6 shadow-md text-center">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-center items-center gap-3 mb-2">
+                <div class="bg-amber-400 text-emerald-900 w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl shadow-inner">
+                    <i class="fa-solid fa-circle-nodes"></i>
+                </div>
+                <h1 class="text-3xl font-extrabold tracking-wide">CLAN BUDDIES</h1>
+            </div>
+            <p class="text-amber-300 italic text-sm font-medium tracking-widest">"Lifting Each Other"</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 max-w-6xl">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
+                <div class="p-3 bg-emerald-100 text-emerald-700 rounded-xl"><i class="fa-solid fa-money-bill-wave text-xl"></i></div>
+                <div>
+                    <p class="text-xs text-gray-400 font-medium">Weekly Round</p>
+                    <p class="text-lg font-bold text-gray-800">3,000,000 UGX</p>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl"><i class="fa-solid fa-user-gift text-xl"></i></div>
+                <div>
+                    <p class="text-xs text-gray-400 font-medium">Recipient</p>
+                    <p id="currentRecipient" class="text-base font-bold text-emerald-800 truncate">Select Below</p>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
+                <div class="p-3 bg-blue-100 text-blue-700 rounded-xl"><i class="fa-solid fa-rotate text-xl"></i></div>
+                <div>
+                    <p class="text-xs text-gray-400 font-medium">Active Cycle</p>
+                    <p id="cycleDisplay" class="text-lg font-bold text-gray-800">Cycle 1</p>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
+                <div class="p-3 bg-purple-100 text-purple-700 rounded-xl"><i class="fa-solid fa-box-archive text-xl"></i></div>
+                <div>
+                    <p class="text-xs text-gray-400 font-medium">Archived Rounds</p>
+                    <p id="archiveCount" class="text-lg font-bold text-gray-800">0 Saved</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                            <i class="fa-solid fa-users text-emerald-600"></i> Current Round Overview
+                        </h2>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-gray-100 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                                    <th class="pb-3">Member</th>
+                                    <th class="pb-3">Weekly Status</th>
+                                    <th class="pb-3">Payout Pinned</th>
+                                    <th class="pb-3 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="memberTableBody" class="divide-y divide-gray-50 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Cycle History Vault
+                    </h2>
+                    <div id="historyContainer" class="text-sm text-gray-400 italic py-2">
+                        No previous cycles archived yet. Close out your first complete round to save history!
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 text-gray-100 p-6 rounded-2xl shadow-lg border border-gray-800 h-fit space-y-6">
+                <div>
+                    <h2 class="text-lg font-bold text-amber-400 flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-sliders"></i> Admin Control Room
+                    </h2>
+                    <p class="text-xs text-gray-400">Authorized actions update real-time records.</p>
+                </div>
+                
+                <div class="space-y-3">
+                    <button onclick="generateRandomOrder()" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 px-4 rounded-xl transition text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-shuffle"></i> Shuffle Payout Order
+                    </button>
+                    
+                    <button onclick="archiveCurrentCycle()" class="w-full bg-gray-800 hover:bg-gray-700 text-amber-300 border border-amber-500/30 font-semibold py-2 px-4 rounded-xl transition text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-box-archive"></i> Close & Archive Cycle
+                    </button>
+                </div>
+                
+                <hr class="border-gray-800">
+                
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Mark Contribution Receipt</h3>
+                    <div id="adminChecklist" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Data Structure loaded from localStorage or using base templates
+        let systemData = JSON.parse(localStorage.getItem('clanBuddiesData')) || {
+            currentCycle: 1,
+            history: [],
+            members: [
+                { id: 1, name: "David Laurance", phone: "256700000000", paid: false, received: false, order: 1 },
+                { id: 2, name: "Apule Gerald", phone: "256700000001", paid: false, received: false, order: 2 },
+                { id: 3, name: "Chris Mukasa", phone: "256700000002", paid: false, received: false, order: 3 },
+                { id: 4, name: "Brian Okello", phone: "256700000003", paid: false, received: false, order: 4 },
+                { id: 5, name: "Sarah K.", phone: "256700000004", paid: false, received: false, order: 5 },
+                { id: 6, name: "Derrick J.", phone: "256700000005", paid: false, received: false, order: 6 },
+                { id: 7, name: "Grace A.", phone: "256700000006", paid: false, received: false, order: 7 },
+                { id: 8, name: "Ivan T.", phone: "256700000007", paid: false, received: false, order: 8 },
+                { id: 9, name: "Emmanuel O.", phone: "256700000008", paid: false, received: false, order: 9 },
+                { id: 10, name: "Fiona N.", phone: "256700000009", paid: false, received: false, order: 10 },
+                { id: 11, name: "Alex B.", phone: "256700000010", paid: false, received: false, order: 11 },
+                { id: 12, name: "Joan M.", phone: "256700000011", paid: false, received: false, order: 12 }
+            ]
+        };
+
+        function saveData() {
+            localStorage.setItem('clanBuddiesData', JSON.stringify(systemData));
+            renderTable();
+            renderAdminChecklist();
+            renderHistory();
+            updateGlobalStats();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('memberTableBody');
+            tbody.innerHTML = '';
+            const sorted = [...systemData.members].sort((a,b) => a.order - b.order);
+
+            sorted.forEach(m => {
+                // Option 4: Direct WhatsApp string builder
+                const message = encodeURIComponent(`Hello ${m.name}! 🪙 Quick update from Clan Buddies. Your weekly cash round contribution of 250,000 UGX is currently pending. Let's keep lifting each other! 🚀`);
+                const whatsappUrl = `https://wa.me/${m.phone}?text=${message}`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50/50">
+                        <td class="py-3.5 font-semibold text-gray-700 flex items-center gap-2">
+                            <span class="inline-flex items-center justify-center bg-gray-100 text-gray-500 font-bold rounded-full w-5 h-5 text-[10px]">${m.order}</span>
+                            ${m.name}
+                        </td>
+                        <td class="py-3.5">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${m.paid ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                ${m.paid ? '🟢 Paid' : '🔴 Pending'}
+                            </span>
+                        </td>
+                        <td class="py-3.5">
+                            <button onclick="toggleReceipt(${m.id})" class="text-xs text-left font-medium focus:outline-none ${m.received ? 'text-amber-600 font-bold' : 'text-gray-300 hover:text-gray-500'}">
+                                ${m.received ? '💰 Collection Clear' : '⏳ Tap to Handover'}
+                            </button>
+                        </td>
+                        <td class="py-3.5 text-right">
+                            ${!m.paid ? `
+                                <a href="${whatsappUrl}" target="_blank" class="inline-flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white text-xs px-2.5 py-1 rounded-lg font-medium transition shadow-sm">
+                                    <i class="fa-brands fa-whatsapp"></i> Nudge
+                                </a>
+                            ` : `<span class="text-emerald-500 text-xs font-semibold"><i class="fa-solid fa-circle-check"></i> Cleared</span>`}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderAdminChecklist() {
+            const container = document.getElementById('adminChecklist');
+            container.innerHTML = '';
+            systemData.members.forEach(m => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-gray-800 p-2 rounded-lg border border-gray-700/40">
+                        <span class="text-xs font-medium text-gray-300">${m.name}</span>
+                        <input type="checkbox" ${m.paid ? 'checked' : ''} onchange="togglePayment(${m.id})" class="accent-emerald-500 h-3.5 w-3.5 rounded">
+                    </div>
+                `;
+            });
+        }
+
+        function togglePayment(id) {
+            const m = systemData.members.find(x => x.id === id);
+            if(m) { m.paid = !m.paid; saveData(); }
+        }
+
+        function toggleReceipt(id) {
+            const m = systemData.members.find(x => x.id === id);
+            if(m) { m.received = !m.received; saveData(); }
+        }
+
+        function generateRandomOrder() {
+            let orders = Array.from({length: 12}, (_, i) => i + 1);
+            for (let i = orders.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [orders[i], orders[j]] = [orders[j], orders[i]];
+            }
+            systemData.members.forEach((m, idx) => { m.order = orders[idx]; });
+            saveData();
+        }
+
+        // Option 3: Logic to snapshot history safely
+        function archiveCurrentCycle() {
+            if(!confirm("Are you sure you want to lock this cycle? This will clear current collection statuses for the next pool.")) return;
+            
+            const snapshot = {
+                cycle: systemData.currentCycle,
+                date: new Date().toLocaleDateString(),
+                records: systemData.members.map(m => ({name: m.name, order: m.order, paid: m.paid}))
+            };
+            
+            systemData.history.push(snapshot);
+            systemData.currentCycle += 1;
+            
+            // Reset for next round
+            systemData.members.forEach(m => { m.paid = false; m.received = false; });
+            saveData();
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyContainer');
+            if(systemData.history.length === 0) return;
+            
+            container.innerHTML = '<div class="space-y-3">';
+            systemData.history.forEach(h => {
+                container.innerHTML += `
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 flex justify-between items-center text-gray-700 italic font-normal">
+                        <div>
+                            <span class="font-bold text-emerald-800 not-italic">Cycle ${h.cycle} Archive</span> 
+                            <p class="text-xs text-gray-400 mt-0.5">Completed on ${h.date}</p>
+                        </div>
+                        <span class="text-xs bg-gray-200 text-gray-600 px-2.5 py-0.5 rounded-full not-italic font-semibold">12/12 Logged</span>
+                    </div>
+                `;
+            });
+            container.innerHTML += '</div>';
+        }
+
+        function updateGlobalStats() {
+            const currentRec = systemData.members.find(m => m.received === true);
+            document.getElementById('currentRecipient').innerText = currentRec ? currentRec.name : "None assigned";
+            document.getElementById('cycleDisplay').innerText = `Cycle ${systemData.currentCycle}`;
+            document.getElementById('archiveCount').innerText = `${systemData.history.length} Saved`;
+        }
+
+        window.onload = () => { saveData(); };
+    </script>
+</body>
+</html>
